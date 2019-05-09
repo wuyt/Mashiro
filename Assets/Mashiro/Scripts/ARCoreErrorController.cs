@@ -9,16 +9,16 @@ namespace Mashiro
         /// <summary>
         /// 异常显示文本
         /// </summary>
-        private Text text;
+        public Text text;
         /// <summary>
         /// 异常显示画布
         /// </summary>
-        private GameObject canvas;
+        public GameObject canvas;
 
         void Start()
         {
-            canvas = FindObjectOfType<Canvas>().gameObject;
-            text = FindObjectOfType<Text>();
+            //canvas = FindObjectOfType<Canvas>().gameObject;
+            //text = FindObjectOfType<Text>();
             canvas.SetActive(false);
         }
 

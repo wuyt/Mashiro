@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ARCoreSessionConfig
   m_EditorClassIdentifier: 
   MatchCameraFramerate: 1
-  PlaneFindingMode: 1
+  PlaneFindingMode: 0
   EnableLightEstimation: 0
   EnableCloudAnchor: 0
   AugmentedImageDatabase: {fileID: 11400000, guid: e4f385ed36f5c5e44a9a1a9db942e3f3,

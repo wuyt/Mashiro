@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 5223647986907681829}
   - component: {fileID: 5223647986907681830}
   - component: {fileID: 5223647986907681826}
+  - component: {fileID: 4599761133773043343}
   m_Layer: 0
   m_Name: Box1
   m_TagString: Untagged
@@ -92,7 +93,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5223647986907681831}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
@@ -111,6 +112,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Size: {x: 0.78, y: 0.48, z: 0.59}
   Position: {x: -1.57, y: -1.26, z: -1.89}
+--- !u!54 &4599761133773043343
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5223647986907681831}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &5223647987374492465
 GameObject:
   m_ObjectHideFlags: 0
@@ -237,7 +254,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5223647987593882677}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.898, y: 0.153, z: 2.315}
+  m_LocalPosition: {x: 0.898, y: -0.037, z: 2.315}
   m_LocalScale: {x: 3.9199996, y: 3, z: 4.37}
   m_Children:
   - {fileID: 5223647986907681827}
@@ -319,7 +336,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fca1f98b4a881a545b1eebb7fa544aa7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Size: {x: 0.898, y: 0.153, z: 0}
+  Size: {x: 0.898, y: -0.037, z: 0}
   Position: {x: 3.92, y: 3, z: 4.37}
 --- !u!1 &5223647987908313786
 GameObject:
@@ -475,6 +492,7 @@ GameObject:
   - component: {fileID: 5223647988991832252}
   - component: {fileID: 5223647988991832253}
   - component: {fileID: 5223647988991832249}
+  - component: {fileID: 7306819325438996472}
   m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
@@ -553,7 +571,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5223647988991832254}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
@@ -572,3 +590,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Size: {x: 0.86, y: 3, z: 0.1}
   Position: {x: -0.35, y: 0, z: -2.235}
+--- !u!54 &7306819325438996472
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5223647988991832254}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
