@@ -12,58 +12,63 @@ namespace Mashiro
         /// <summary>
         /// 位置模型
         /// </summary>
-        public Transform place;
-        /// <summary>
-        /// 计时滚动条
-        /// </summary>
-        public Slider slider;
+        public Transform room;
         /// <summary>
         /// 模型字典
         /// </summary>
-        private Dictionary<int, GameObject> dictPrefab
-                = new Dictionary<int, GameObject>();
+        private Dictionary<int, Transform> dictRoom
+                = new Dictionary<int, Transform>();
         /// <summary>
         /// 识别图片列表
         /// </summary>
         private List<AugmentedImage> listAugmentedImage
             = new List<AugmentedImage>();
+        /// <summary>
+        /// 查找时画布
+        /// </summary>
+        public GameObject findingCanvas;
+        /// <summary>
+        /// 等待时候画布
+        /// </summary>
+        public GameObject watingCanvas;
 
         /// <summary>
-        /// 
+        /// 状态枚举
         /// </summary>
         private enum Status
         {
+            /// <summary>
+            /// 发现定位
+            /// </summary>
             finding,
+            /// <summary>
+            /// 等待
+            /// </summary>
             waiting,
-            outside,
-            inside
+            /// <summary>
+            /// 追踪
+            /// </summary>
+            tracking
         }
-
+        /// <summary>
+        /// 状态
+        /// </summary>
         private Status status;
 
-
+        /// <summary>
+        /// 等待时间
+        /// </summary>
         private float waitTime;
 
-        public GameObject canvasDoor;
-
-        public GameObject[] BCanvas;
-
-        public GameObject canvasWindow;
-
-        public Text txtWindow;
+        /// <summary>
+        /// ARCore的摄像头
+        /// </summary>
+        public Transform arCoreCamera;
 
         private void Start()
         {
             status = Status.finding;
-            slider.gameObject.SetActive(false);
-            canvasDoor.SetActive(false);
-
-            foreach (var i in BCanvas)
-            {
-                i.SetActive(false);
-            }
-
-            canvasWindow.SetActive(false);
+            StartFinding();
         }
 
         void Update()
@@ -71,60 +76,22 @@ namespace Mashiro
             switch (status)
             {
                 case Status.finding:
-                    FindImage();
+                    Finding();
                     break;
                 case Status.waiting:
                     Waiting();
                     break;
-                case Status.outside:
+                case Status.tracking:
                     break;
-                case Status.inside:
-                    break;
-            }
-
-            //检查是否处于追踪状态
-            if (Session.Status != SessionStatus.Tracking)
-            {
-                return;
-            }
-
-            //更新识别图片列表
-            Session.GetTrackables<AugmentedImage>(
-                listAugmentedImage, TrackableQueryFilter.Updated);
-
-            //遍历识别图片列表
-            foreach (AugmentedImage image in listAugmentedImage)
-            {
-                //从字典中获取模型
-                dictPrefab.TryGetValue(image.DatabaseIndex, out GameObject outPrefab);
-
-                if (image.TrackingState == TrackingState.Tracking
-                    && outPrefab == null)   //识别图片被发现
-                {
-                    //在识别图片中心添加追踪锚点
-                    Anchor anchor = image.CreateAnchor(image.CenterPose);
-
-                    //将位置模型移动对应
-                    place.position = anchor.transform.position;
-                    dictPrefab.Add(image.DatabaseIndex, place.gameObject);
-                    place.parent = anchor.transform;
-                    place.localPosition = Vector3.zero;
-                    place.localRotation = Quaternion.Euler(90f,0f,0f);
-
-                }
-                else if (image.TrackingState == TrackingState.Stopped
-                    && outPrefab != null)   //识别图片消失
-                {
-                    //从字典中移除对应内容
-                    dictPrefab.Remove(image.DatabaseIndex);
-                    //删除模型
-                    //GameObject.Destroy(outPrefab);
-                }
             }
         }
 
-        private void FindImage()
+        /// <summary>
+        /// 查找过程
+        /// </summary>
+        private void Finding()
         {
+
             //检查是否处于追踪状态
             if (Session.Status != SessionStatus.Tracking)
             {
@@ -136,99 +103,122 @@ namespace Mashiro
                 listAugmentedImage, TrackableQueryFilter.Updated);
 
             //遍历识别图片列表
-            foreach (AugmentedImage image in listAugmentedImage)
+            foreach (var image in listAugmentedImage)
             {
-                //从字典中获取模型
-                dictPrefab.TryGetValue(image.DatabaseIndex, out GameObject outPrefab);
-
-                if (image.TrackingState == TrackingState.Tracking
-                    && outPrefab == null)   //识别图片被发现
+                dictRoom.TryGetValue(image.DatabaseIndex, out Transform outTransform);
+                if (image.TrackingState == TrackingState.Tracking && outTransform == null)
                 {
-                    //在识别图片中心添加追踪锚点
-                    Anchor anchor = image.CreateAnchor(image.CenterPose);
+                    //图片被识别
 
-                    //将位置模型移动对应
-                    place.position = anchor.transform.position;
-                    dictPrefab.Add(image.DatabaseIndex, place.gameObject);
-                    place.parent = anchor.transform;
-                    place.localPosition = Vector3.zero;
-                    place.localRotation = Quaternion.Euler(90f, 0f, 0f);
+                    //查看图片识别处是否有识别平面
+                    TrackableHit hit;
+                    TrackableHitFlags raycastFilter = TrackableHitFlags.PlaneWithinPolygon |
+                        TrackableHitFlags.FeaturePointWithSurfaceNormal;
 
-                    slider.gameObject.SetActive(true);
-                    slider.value = 0f;
-                    waitTime = Time.time;
-                    status = Status.waiting;
+                    if (Frame.Raycast(arCoreCamera.transform.position,
+                        (image.CenterPose.position - arCoreCamera.transform.position).normalized,
+                        out hit, 10f, raycastFilter))
+                    {
+                        if ((hit.Trackable is DetectedPlane) &&
+                            Vector3.Dot(arCoreCamera.transform.position - hit.Pose.position,
+                                hit.Pose.rotation * Vector3.up) < 0)
+                        {
+                            Debug.Log("Hit at back of the current DetectedPlane");
+                        }
+                        else
+                        {
+                            //有识别平面，进入等待状态
+                            status = Status.waiting;
+                            StartWaiting();
+                        }
+                    }
+                }
+                else if (image.TrackingState == TrackingState.Stopped && outTransform != null)
+                {
+                    dictRoom.Remove(image.DatabaseIndex);
                 }
             }
         }
 
+        /// <summary>
+        /// 等待过程，目的是提高稳定程度，避免因为识别过快导致的偏移
+        /// </summary>
         private void Waiting()
         {
-            slider.value = (Time.time - waitTime) / 5;
-
-            if (slider.value >= 1)
+            if ((Time.time - waitTime) > 2f)
             {
-                status = Status.outside;
-                OnOutside();
-            }
-
-            //检查是否处于追踪状态
-            if (Session.Status != SessionStatus.Tracking)
-            {
-                return;
-            }
-
-            //更新识别图片列表
-            Session.GetTrackables<AugmentedImage>(
-                listAugmentedImage, TrackableQueryFilter.Updated);
-
-            //遍历识别图片列表
-            foreach (AugmentedImage image in listAugmentedImage)
-            {
-                //从字典中获取模型
-                dictPrefab.TryGetValue(image.DatabaseIndex, out GameObject outPrefab);
-
-                if (image.TrackingState == TrackingState.Stopped
-                    && outPrefab != null)   //识别图片消失
+                //检查是否处于追踪状态
+                if (Session.Status != SessionStatus.Tracking)
                 {
-                    //从字典中移除对应内容
-                    dictPrefab.Remove(image.DatabaseIndex);
+                    return;
+                }
 
-                    place.parent = null;
-                    place.position = new Vector3(0f, 5f, 0f);
-                    slider.gameObject.SetActive(false);
-                    status = Status.finding;
+                //更新识别图片列表
+                Session.GetTrackables<AugmentedImage>(
+                    listAugmentedImage, TrackableQueryFilter.Updated);
+
+                //遍历识别图片列表
+                foreach (var image in listAugmentedImage)
+                {
+                    dictRoom.TryGetValue(image.DatabaseIndex, out Transform outTransform);
+                    if (image.TrackingState == TrackingState.Tracking && outTransform == null)
+                    {
+                        //图片被识别
+
+                        //建立锚点
+                        Anchor anchor = image.CreateAnchor(image.CenterPose);
+
+                        //根据锚点设置空间
+                        room.gameObject.SetActive(true);
+                        room.parent = anchor.transform;
+                        room.localPosition = room.GetComponent<PositioningOffset>().position;
+                        room.localRotation = Quaternion.Euler(90f, 0f, 0f);
+                        room.parent = null;
+
+                        dictRoom.Add(image.DatabaseIndex, room);
+
+                        //进入追踪状态
+                        status = Status.tracking;
+                        StartTracking();
+                    }
+                    else if (image.TrackingState == TrackingState.Stopped && outTransform != null)
+                    {
+                        dictRoom.Remove(image.DatabaseIndex);
+                        status = Status.finding;
+                        StartFinding();
+                    }
                 }
             }
         }
 
-        private void OnOutside()
+        /// <summary>
+        /// 开始等待
+        /// </summary>
+        private void StartWaiting()
         {
-            slider.gameObject.SetActive(false);
-            canvasDoor.SetActive(true);
-            place.parent = null;
+            waitTime = Time.time;
+            findingCanvas.SetActive(false);
+            watingCanvas.SetActive(true);
+            dictRoom.Clear();
         }
 
-        private void OnCameraTriggerEnter(Collider other)
+        /// <summary>
+        /// 开始查找
+        /// </summary>
+        private void StartFinding()
         {
-            if (other.name == "Door")
-            {
-                canvasDoor.SetActive(false);
-                status = Status.inside;
-            }
+            watingCanvas.SetActive(false);
+            findingCanvas.SetActive(true);
+            room.gameObject.SetActive(false);
+            dictRoom.Clear();
+        }
 
-            if(other.name == "Box1")
-            {
-                foreach(var i in BCanvas)
-                {
-                    i.SetActive(true);
-                }
-            }
-
-            if (other.name == "Windows")
-            {
-                canvasWindow.SetActive(true);
-            }
+        /// <summary>
+        /// 开始追踪
+        /// </summary>
+        private void StartTracking()
+        {
+            watingCanvas.SetActive(false);
         }
     }
 }

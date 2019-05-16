@@ -9,27 +9,21 @@ namespace Mashiro
         /// <summary>
         /// 异常显示文本
         /// </summary>
-        public Text text;
+        private Text text;
         /// <summary>
         /// 异常显示画布
         /// </summary>
-        public GameObject canvas;
+        private GameObject canvas;
 
         void Start()
         {
-            //canvas = FindObjectOfType<Canvas>().gameObject;
-            //text = FindObjectOfType<Text>();
+            canvas = GameObject.Find("/CanvasError");
+            text = canvas.transform.Find("Panel/Text").GetComponent<Text>();
             canvas.SetActive(false);
         }
 
         void Update()
         {
-            //按退出按钮退出程序
-            if (Input.GetKey(KeyCode.Escape))
-            {
-                Application.Quit();
-            }
-
             //处于追踪状态不会进入睡眠模式
             if (Session.Status != SessionStatus.Tracking)
             {
