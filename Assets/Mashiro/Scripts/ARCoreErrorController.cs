@@ -4,6 +4,9 @@ using UnityEngine.UI;
 
 namespace Mashiro
 {
+    /// <summary>
+    /// ARCore错误提示
+    /// </summary>
     public class ARCoreErrorController : MonoBehaviour
     {
         /// <summary>

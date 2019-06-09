@@ -1,10 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Video;
 
 namespace Mashiro
 {
+    /// <summary>
+    /// 视频播放
+    /// </summary>
     [RequireComponent(typeof(VideoPlayer))]
     public class VideoController : MonoBehaviour
     {

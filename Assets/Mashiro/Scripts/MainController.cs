@@ -1,12 +1,12 @@
 ﻿using GoogleARCore;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
-using UnityEngine.UI;
 
 namespace Mashiro
 {
+    /// <summary>
+    /// 主要控制逻辑
+    /// </summary>
     public class MainController : MonoBehaviour
     {
         /// <summary>
@@ -31,6 +31,10 @@ namespace Mashiro
         /// 等待时候画布
         /// </summary>
         public GameObject watingCanvas;
+        /// <summary>
+        /// 显示点击后的UI
+        /// </summary>
+        public GameObject uiCanvas;
 
         /// <summary>
         /// 状态枚举
@@ -83,6 +87,11 @@ namespace Mashiro
                     break;
                 case Status.tracking:
                     break;
+            }
+
+            if (Input.GetKey(KeyCode.Escape))
+            {
+                Application.Quit();
             }
         }
 
@@ -209,6 +218,7 @@ namespace Mashiro
         {
             watingCanvas.SetActive(false);
             findingCanvas.SetActive(true);
+            uiCanvas.SetActive(false);
             room.gameObject.SetActive(false);
             dictRoom.Clear();
         }
@@ -219,6 +229,7 @@ namespace Mashiro
         private void StartTracking()
         {
             watingCanvas.SetActive(false);
+            uiCanvas.SetActive(true);
         }
     }
 }
