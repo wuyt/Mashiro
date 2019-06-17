@@ -6,6 +6,12 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Mashiro/Scenes/Menu.unity
+    guid: 33469c85422649f4eb851e9e3bea08e8
+  - enabled: 1
+    path: Assets/Mashiro/Scenes/IndoorNav.unity
+    guid: 6f025d5595e68304d8c0c583d7ac3632
+  - enabled: 1
     path: Assets/Mashiro/Scenes/Main.unity
     guid: dc29d8f9a24dae34584f7b55f8461dba
   m_configObjects: {}

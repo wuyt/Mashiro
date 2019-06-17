@@ -42,6 +42,8 @@ namespace Mashiro
         // Update is called once per frame
         void Update()
         {
+            //点击
+
             if (isShow || Input.touchCount != 1)
             {
                 return;

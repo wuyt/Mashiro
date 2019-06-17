@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -35,7 +34,10 @@ namespace Mashiro
         {
             StopCoroutine(GetHttp());
         }
-
+        /// <summary>
+        /// 获得网络内容
+        /// </summary>
+        /// <returns></returns>
         IEnumerator GetHttp()
         {
             using (UnityWebRequest www = new UnityWebRequest())
@@ -61,13 +63,13 @@ namespace Mashiro
                     info = info.Replace("\";", "");
                     info = info.Replace("\"", "");
                     var arrayInfo = info.Split(',');
-                    
+
                     poi.txtContent = "date:" + arrayInfo[30] + "  time:" + arrayInfo[31];
                     poi.txtContent = "Yesterday's closing price:" + arrayInfo[2] + "\r\n" + poi.txtContent;
                     poi.txtContent = "Current price:" + arrayInfo[3] + "\r\n" + poi.txtContent;
 
 
-                    poi.txtMore = "------------------------------" + "\r\n" ;
+                    poi.txtMore = "------------------------------" + "\r\n";
                     poi.txtMore = "date:" + arrayInfo[30] + "  time:" + arrayInfo[31] + "\r\n" + poi.txtMore;
                     poi.txtMore = "Today's lowest price:" + arrayInfo[5] + "  Today's highest price:" + arrayInfo[4] + "\r\n" + poi.txtMore;
                     poi.txtMore = "Yesterday's closing price:" + arrayInfo[2] + "  Opening price today:" + arrayInfo[1] + "\r\n" + poi.txtMore;

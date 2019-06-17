@@ -1,6 +1,7 @@
 ﻿using GoogleARCore;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Mashiro
 {
@@ -88,10 +89,11 @@ namespace Mashiro
                 case Status.tracking:
                     break;
             }
-
+            //返回菜单
             if (Input.GetKey(KeyCode.Escape))
             {
-                Application.Quit();
+                //Application.Quit();
+                SceneManager.LoadScene("Menu");
             }
         }
 
